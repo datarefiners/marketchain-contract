@@ -6,10 +6,16 @@
 deps/
 states/
 
+# Hardhat
+node_modules/
+cache/
+typechain-types/
+dist/
+
 # Debug info
 *.dbg.json
 *.tsbuildinfo
 
-# Optional
+# Environment
 .env
 .env.local
