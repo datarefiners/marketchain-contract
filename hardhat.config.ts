@@ -25,7 +25,7 @@ const config: HardhatUserConfig = {
       url: "http://127.0.0.1:8545",
     },
     polygonAmoy: {
-      url: AMOY_RPC_URL || "https://rpc-amoy.polygon.technology",
+      url: AMOY_RPC_URL || "https://polygon-amoy-bor-rpc.publicnode.com",
       accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
       chainId: 80002,
     },

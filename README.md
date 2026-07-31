@@ -73,17 +73,18 @@ npx hardhat test          # Lancer les tests (Hardhat Network, 0 dép. externe)
 ### Commandes disponibles
 
 ```bash
-npm run compile           # Compiler le contrat Solidity
-npm run test              # Lancer les 26 tests unitaires
-npm run node              # Démarrer un nœud local persistant (port 8545)
-npm run deploy:local      # Déployer sur le nœud local
-npm run deploy:amoy       # Déployer sur Polygon Amoy (testnet)
-npm run deploy:polygon    # Déployer sur Polygon mainnet
+npm run compile              # Compiler le contrat Solidity
+npm run test                 # Lancer les 45 tests (26 unitaires + 19 intégration)
+npm run test:integration     # Lancer uniquement les tests d'intégration (nécessite npx hardhat node)
+npm run node                 # Démarrer un nœud local persistant (port 8545)
+npm run deploy:local         # Déployer sur le nœud local persisté
+npm run deploy:amoy          # Déployer sur Polygon Amoy (testnet)
+npm run deploy:polygon       # Déployer sur Polygon mainnet
 ```
 
-### Tests
+### Tests unitaires (26)
 
-26 tests répartis en 8 groupes, exécutés sur Hardhat Network (EVM locale compatible Polygon) :
+Exécutés sur Hardhat Network (EVM éphémère en mémoire, 0 dépendance externe) :
 
 | Groupe | Tests |
 |---|---|
@@ -95,9 +96,24 @@ npm run deploy:polygon    # Déployer sur Polygon mainnet
 | Non-retroactive revocation | historique conservé après révocation |
 | Edge cases | multi-writers indépendants |
 
+### Tests d'intégration (19)
+
+Exécutés contre un nœud local **persistant** (transactions réelles dans de vrais blocs) :
+
+| Groupe | Tests |
+|---|---|
+| Déploiement | admin, compteur, event AdminTransferred, tx confirmée |
+| Gestion des writers | ajout, isWriter, auth non-admin, révocation, ré-ajout |
+| Ancrage | 2 ancres, anti-doublon, auth non-writer, lecture publique |
+| Transfert d'admin | transfert, perte droits ancien admin, restauration |
+| Cohérence | ancres intactes, bloc contient les transactions |
+
 ```bash
-npx hardhat test
-# 26 passing (env. 400ms)
+# Terminal 1 : lancer le nœud
+npx hardhat node
+
+# Terminal 2 : lancer les tests d'intégration
+npm run test:integration
 ```
 
 ### Réseaux configurés dans hardhat.config.ts
@@ -127,16 +143,28 @@ npm run deploy:amoy
 npm run verify:amoy <adresse-contrat>
 ```
 
+## Qui paie quoi
+
+| Action | Gas payé par |
+|---|---|
+| Déployer le contrat | SaaS (admin) |
+| `addWriter` / `removeWriter` | SaaS (admin) |
+| `anchor(sealHash)` | **Utilisateur** (son wallet) |
+| `getAnchor` / `isWriter` | Personne (lecture gratuite) |
+
+**Le contrat enregistre `msg.sender` comme auteur de l'ancre** — c'est le wallet de l'utilisateur qui paie les frais et qui est inscrit dans le registre. Le SaaS ne paie que l'administration (writers, déploiement).
+
 ## Structure du projet
 
 ```
 marketchain-contract-1/
 ├── contracts/
-│   └── MarketChainAnchorRegistry.sol    # Smart contract
+│   └── MarketChainAnchorRegistry.sol     # Smart contract
 ├── test/
-│   └── MarketChainAnchorRegistry.test.ts # Tests unitaires (26)
+│   ├── MarketChainAnchorRegistry.test.ts  # Tests unitaires (26)
+│   └── integration.test.ts                # Tests d'intégration (19)
 ├── scripts/
-│   └── deploy.ts                        # Script de déploiement
+│   └── deploy.ts                         # Script de déploiement
 ├── hardhat.config.ts                    # Configuration Hardhat
 ├── tsconfig.json                        # Configuration TypeScript
 ├── package.json                         # Dépendances et scripts
@@ -145,6 +173,10 @@ marketchain-contract-1/
 ├── .nvmrc                               # Version Node.js
 └── .gitignore
 ```
+
+## Documentation
+
+La référence complète des fonctions du contrat (signatures, paramètres, exemples Node.js/ethers.js, events) est dans [`docs/contract-reference.md`](./docs/contract-reference.md).
 
 ## Interaction SaaS
 

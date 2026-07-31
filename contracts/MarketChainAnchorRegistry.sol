@@ -79,6 +79,10 @@ contract MarketChainAnchorRegistry {
         emit AnchorCreated(index, sealHash, msg.sender, block.timestamp);
     }
 
+    function isWriter(address wallet) external view returns (bool) {
+        return writers[wallet];
+    }
+
     function getAnchor(uint256 index)
         external
         view

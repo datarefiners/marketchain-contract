@@ -6,6 +6,8 @@
   "scripts": {
     "compile": "hardhat compile",
     "test": "hardhat test",
+    "test:integration": "hardhat test test/integration.test.ts --network localhost",
+    "test:testnet": "hardhat test test/testnet.test.ts --network polygonAmoy",
     "node": "hardhat node",
     "deploy:local": "hardhat run scripts/deploy.ts --network localhost",
     "deploy:hardhat": "hardhat run scripts/deploy.ts --network hardhat",

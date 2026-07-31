@@ -1,0 +1,11 @@
+{
+  "network": "polygonAmoy",
+  "chainId": 80002,
+  "contracts": {
+    "MarketChainAnchorRegistry": {
+      "address": "0x0Cc3fF130dc4D96F0d250a1E3680EeAA53C31bc7",
+      "deployer": "0x7Ee2C344F894b2874C05732eB23677AD5a3932e0",
+      "txHash": "0x3a514a228c7515d45381acf62a75e51564f8e3c01462d53142f379a6b98dd5da"
+    }
+  }
+}
